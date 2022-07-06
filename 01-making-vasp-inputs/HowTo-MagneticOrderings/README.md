@@ -1,19 +1,20 @@
 # How to more rapidly input a desired magnetic ordering into VASP INCAR from POSCAR file
 
-Within VASP, the magnetic ordering is determined based on the initial magnetic moments supplied within the INCAR file from the **MAGMOM** tag. While it is fairly simple to have either a non-magnetic or ferromagnetic ordering, for anti-ferromagnetic systems with a more complex magnetic ordering this can be much more difficult and very tedious. I have figured out a way to expedite the process of defining this with the GUI from the Atomic Simulation Environment (ASE) (https://gitlab.com/ase/ase). While this is still not fully automated(I am currently working on this!), I have found that this can really help speed up generating the desired MAGMOM tag for VASP calculations.
+Within VASP, the magnetic ordering is determined based on the initial magnetic moments supplied within the INCAR file from the **MAGMOM** tag. While it is fairly simple to have either a non-magnetic or ferromagnetic ordering, for anti-ferromagnetic systems with a more complex magnetic ordering this can be much more difficult and very tedious. I have figured out a way to expedite the process of defining this with the GUI from the Atomic Simulation Environment (ASE) (https://gitlab.com/ase/ase). While this is still not fully automated(I am currently working on this!), I have found that this can really help speed up generating the desired MAGMOM tag for VASP calculations. More detailed information of how VASP handles spin-polarized calculations can be found at https://www.vasp.at/wiki/index.php/MAGMOM.
+
 ***
 
 ## Steps
-**NOTE that one needs to use the same POSCAR file here**
+**NOTE that one needs to use the same POSCAR file here as what will be run in the VASP calculation**
 
-*It is assumed that the user has ASE installed properly and that they have X11/Wayland forwarding on their machine*
+*It is assumed that the user has ASE installed properly and that they have X11/Wayland forwarding on their machine in order to actually use ASE GUI*
 
 
 This example will be performed with the rocksalt NiO which is known to have an anti-ferromagnetic type-II (AFMII) ordering with alternative ferromagnetic planes in the 111 direction (image from Dudarev, S. L. *et al*. Electron-Energy-Loss Spectra and the Structural Stability of Nickel Oxide: An LSDA+U Study. Phys. Rev. B 1998, 57 (3), 1505–1509. https://doi.org/10.1103/PhysRevB.57.1505.):
 ![plot](./AFMII-NiO.png) 
 ### 01 - Opening POSCAR file with ASE GUI
-Using a *nix command line, the POSCAR file can be opened using the following command:
-<p align = 'center'> $ase gui POSCAR
+Using a *nix command line, the POSCAR file can be opened using the following command (I have provided the same POSCAR as used in this example within this directory):
+<p align = 'center'> $ ase gui POSCAR
 
 The following window will then open:
 
@@ -47,7 +48,7 @@ One cannot directly (to my knowledge) directly input this into a VASP INCAR, thu
 
 ![plot](./ase_gui_6.png)
 
-### processing the *.xyz file
+### 05 - Processing the *.xyz file
 Our .xyz file should look like this: 
 
 ![plot](./xyz_file.png)
@@ -59,14 +60,15 @@ The column corresponding to our magnetic moments is the last column (the one wit
 - Next, we need to use a text editor to delete all the columns that we don't want as well as the trailing zeros of the last column 
     - I personally use VS Code, as this as a "Column Selection" mode that I find useful
     - I know there are ways to script this, however I have not gotten around to it just yet
+
 ![plot](./xyz_file_3.png)
 
 - Save the file (no need to change the name)
 - use the following command to change all of the newlines to spaces within our modified *.xyz file:
-<p align = 'center'> $perl -pi -e 's/\n/ /g' *.xyz
+<p align = 'center'> $ perl -pi -e 's/\n/ /g' *.xyz
 
 - use the following command to change all of the double spaces to single spaces within our modified *.xyz file:
-<p align = 'center'> $perl -pi -e 's/  / /g' *.xyz
+<p align = 'center'> $ perl -pi -e 's/  / /g' *.xyz
 
 ![plot](./xyz_file_4.png)
 
