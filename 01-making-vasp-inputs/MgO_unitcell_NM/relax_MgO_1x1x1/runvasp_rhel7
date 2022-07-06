@@ -1,0 +1,17 @@
+#!/bin/sh
+    #PBS -N MgO_8_relax
+    #PBS -r n
+    #PBS -e scheduler.err
+    #PBS -o scheduler.out
+    #PBS -l walltime=1:00:00
+    #PBS -l pmem=5000mb
+    #PBS -l nodes=1:ppn=20
+    #PBS -A open
+    #PBS -l feature=rhel7
+
+    cd $PBS_O_WORKDIR
+    module purge
+    module use /gpfs/group/RISE/sw7/modules
+    module load vasp/vasp-5.4.1a
+
+    mpirun  vasp_std

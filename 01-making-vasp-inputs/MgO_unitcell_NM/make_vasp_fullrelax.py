@@ -1,0 +1,80 @@
+from pymatgen.io.vasp.sets import MPRelaxSet
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import structure
+from subprocess import call
+from ase.io import read,write
+import numpy as np
+import os
+import glob
+# read in the structure you want to make VASP inputs for
+struct = read('MgO.cif')
+
+# nomenclature for files
+name = 'relax_MgO_1x1x1' # this is for the file where vasp files will be placed
+abbrev_name = 'MgO_8_relax' # this is for the qsub submission to ACI
+
+# conversion of objects
+atoms = struct.copy()
+s = AseAtomsAdaptor.get_structure(atoms)
+
+custom_setting = {
+            'LDAU': False, # want to use hubbard U parameters
+            'LDAUTYPE': 2, # using the dudarev approach where U(#)-J(0.0)
+            'LDAUPRINT': 1, # write the occupancy matrix to the OUTCAR
+            'LMAXMIX': 4, # recommended for d-electrons by the VASP Wiki
+            'LDAUU': {'O':{'Mg':0, 'Co':4, 'Cu':5, 'Ni':5, 'Zn':0, 'Cr':4, 'Mn':4}}, # the Hubbard U value that is applied to the different elements
+                # these are from the fittings which I have done, so you can change these if you want to use them for your own systems
+            'LDAUJ': {'O':{'Mg':0, 'Co':0, 'Cu':0, 'Ni':0, 'Zn':0, 'Cr':0, 'Mn':0}}, # the Hubbard J value that is applied, but since we are using Dudarev approach this should ALWAYS be 0.0
+            'LDAUL': {'O':{'Mg':0, 'Co':2, 'Cu':2, 'Ni':2, 'Zn':0, 'Cr':2, 'Mn':2}}, # to specify that we are applying the hubbard U correction the d orbitals
+            'NSW': 100, # max number of ionic steps
+            'ISMEAR': 0, # Gaussian smearing
+            'ENCUT': 600, # using 600eV to eliminate Pulay stress
+            'EDIFF': 1e-5, # energy convergence criteria within a single ionic step -- this seems to be a good average of speed and stringency in my experience
+	        'EDIFFG': -0.010, # force convergence to less than 10 meV/angstrom
+            'IBRION': 2, # using conjugate gradient ionic relaxation
+            'NCORE': 20, # parallelization scheme
+            'NELM': 500, # max number of electronic steps performed in the single scf loop
+                # this is probably overkill, but for some of the HEOs it it necessary since they are very slow to converge
+            'SIGMA': 0.05, # converged smearing value -- pretty small and suggested by VASP wiki
+            'LCHARG': False, # writing the chgcar with the charge density 
+            'LWAVE': False, # writing the wavecar with the wavefunctions
+            'ALGO': 'All', # conjugate gradient electronic minimization algorithm -- seen better performance for TMO structures
+	        'ISIF': 3, # allow ionic positions to be relaxed as well as the cell
+            'LASPH': True, # include non-spherical contributions related to the gradient of the density in the PAW spheres (recommended for d-elements)
+            'LORBIT': 11, # to write the DOSCAR and Im-decomposed PROCAR
+            'LREAL': 'Auto', # can have some small error in total energy, but greatly increases speed for larger structures
+            'GGA': 'PS', # for using PBEsol XC functional 
+            'ISYM': 0 # turn off all symmetry
+                }
+kpoints = {"reciprocal_density": 75} # should be a gamma centered 6x6x6 kpoint mesh for 8 atom MgO unit cell
+
+relax = MPRelaxSet(s, user_kpoints_settings = kpoints, user_incar_settings = custom_setting, force_gamma = True)
+
+relax.write_input(name,include_cif=True)
+
+os.chdir(name)
+
+
+
+
+with open('runvasp_rhel7','w') as write_pbs:
+    pbs = '''#!/bin/sh
+    #PBS -N %s
+    #PBS -r n
+    #PBS -e scheduler.err
+    #PBS -o scheduler.out
+    #PBS -l walltime=1:00:00
+    #PBS -l pmem=5000mb
+    #PBS -l nodes=1:ppn=20
+    #PBS -A open
+    #PBS -l feature=rhel7
+
+    cd $PBS_O_WORKDIR
+    module purge
+    module use /gpfs/group/RISE/sw7/modules
+    module load vasp/vasp-5.4.1a
+
+    mpirun  vasp_std''' %abbrev_name
+
+    write_pbs.write(pbs)
+    os.chdir('../')
