@@ -23,29 +23,43 @@ The following window will then open:
 One then needs to use the ASE GUI to turn the structure the desired fashion so that the AFMII can be easy seen (NOTE that this is *much* easier with a mouse compared to a trackpad):
 - I also find it easier sometimes to reduce the size of the atoms by changing the following within the ASE GUI: >View>Settings>Scale atomic radii. The default for NiO is 0.89, in the following image I have reduced this to 0.7.
 
-
 ![plot](./ase_gui_2.png)
-
 
 We now can see that the z-direction is upwards, and we have oriented the cell such that we can determine the AFMII magnetic ordering with the eye.
 
 ### 03 - Selecting atoms and giving them a magnetic moment
 Now we will start to select all of the atoms which we will want to be initialized as spin-up. I always start this at the origin and move on from their. You can hold CTRL to select more than one atom at a time.
+
 ![plot](./ase_gui_3.png)
+
 We can see that we have 16 Nickel atoms selected in the bottom left corner, and can see the AFMII magnetic ordering denoted by the highlighted atoms with a thicker border.
 Now we need to give them a local magnetic moment by going to >Edit>Modify>Moment.
+
 ![plot](./ase_gui_4.png)
+
 Here I have given these a local magnetic moment of 2.0 Bohr-Magneton as our initial MAGMOM. **NOTE** that while it is tedious, you should use the up- and down-arrows within the ASE GUI to change the magnetic moment as it does not work when you just type it in.
-After doing this similarly for the alterating 111 ferromagnetic planes with spin-down, we obtain the following magnetic ordering within our POSCAR (you can check this similarly with >View>Show Labels>Magnetic Moments): ![plot](./ase_gui_5.png)
+After doing this similarly for the alterating 111 ferromagnetic planes with spin-down, we obtain the following magnetic ordering within our POSCAR (you can check this similarly with >View>Show Labels>Magnetic Moments): 
+
+![plot](./ase_gui_5.png)
 
 ### 04 - Saving file as a .xyz
-One cannot directly (to my knowledge) directly input this into a VASP INCAR, thus we need to save this a .xyz file for further processing. Te beauty of the .xyz file is that this file type contains the magnetic moments for all atoms within the system of interest. We can save thisyto a .xyz file using >File>Save. I usually use the same filename (magordering.xyz), but you can use whatever your heart desires: ![plot](./ase_gui_6.png)
+One cannot directly (to my knowledge) directly input this into a VASP INCAR, thus we need to save this a .xyz file for further processing. Te beauty of the .xyz file is that this file type contains the magnetic moments for all atoms within the system of interest. We can save thisyto a .xyz file using >File>Save. I usually use the same filename (magordering.xyz), but you can use whatever your heart desires: 
+
+![plot](./ase_gui_6.png)
 
 ### processing the *.xyz file
-Our .xyz file should look like this: ![plot](./xyz_file.png)
+Our .xyz file should look like this: 
+
+![plot](./xyz_file.png)
 The column corresponding to our magnetic moments is the last column (the one with the red arrow pointing to it).
-- First, we need to delete the top two lines of the file using any text editor so that we only have the columns ![plot](./xyz_file_2.png)
-- Next, we need to use a text editor to delete all the columns that we don't want as well as the trailing zeros of the last column ![plot](./xyz_file_3.png)
+- First, we need to delete the top two lines of the file using any text editor so that we only have the columns 
+
+![plot](./xyz_file_2.png)
+
+- Next, we need to use a text editor to delete all the columns that we don't want as well as the trailing zeros of the last column 
+
+![plot](./xyz_file_3.png)
+
     - I personally use VS Code, as this as a "Column Selection" mode that I find useful
     - I know there are ways to script this, however I have not gotten around to it just yet
 - Save the file (no need to change the name)
@@ -56,6 +70,7 @@ The column corresponding to our magnetic moments is the last column (the one wit
 ![plot](./xyz_file_4.png)
 
 Voila! We now have a format which can be directly copied and pasted to replace the MAGMOM tag within our INCAR file for more complex magnetic systems!
+
 ![plot](./final-incar.png)
 
 I am currently working on a way to automate this process more, as this is still fairly human-interaction intensive (which basically throws high-throughput calculations out of the window with this current process). This will be updated as I make progress on this.
