@@ -16,12 +16,17 @@ Using a *nix command line, the POSCAR file can be opened using the following com
 <p align = 'center'> $ase gui POSCAR
 
 The following window will then open:
+
 ![plot](./ase_gui_1.png)
 
 ### 02 - Positioning structure such that the desired magnetic ordering can be seen
 One then needs to use the ASE GUI to turn the structure the desired fashion so that the AFMII can be easy seen (NOTE that this is *much* easier with a mouse compared to a trackpad):
 - I also find it easier sometimes to reduce the size of the atoms by changing the following within the ASE GUI: >View>Settings>Scale atomic radii. The default for NiO is 0.89, in the following image I have reduced this to 0.7.
+
+
 ![plot](./ase_gui_2.png)
+
+
 We now can see that the z-direction is upwards, and we have oriented the cell such that we can determine the AFMII magnetic ordering with the eye.
 
 ### 03 - Selecting atoms and giving them a magnetic moment
