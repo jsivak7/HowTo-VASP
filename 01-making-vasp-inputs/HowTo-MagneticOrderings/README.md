@@ -57,16 +57,17 @@ The column corresponding to our magnetic moments is the last column (the one wit
 ![plot](./xyz_file_2.png)
 
 - Next, we need to use a text editor to delete all the columns that we don't want as well as the trailing zeros of the last column 
-
-![plot](./xyz_file_3.png)
-
     - I personally use VS Code, as this as a "Column Selection" mode that I find useful
     - I know there are ways to script this, however I have not gotten around to it just yet
+![plot](./xyz_file_3.png)
+
 - Save the file (no need to change the name)
 - use the following command to change all of the newlines to spaces within our modified *.xyz file:
 <p align = 'center'> $perl -pi -e 's/\n/ /g' *.xyz
+
 - use the following command to change all of the double spaces to single spaces within our modified *.xyz file:
 <p align = 'center'> $perl -pi -e 's/  / /g' *.xyz
+
 ![plot](./xyz_file_4.png)
 
 Voila! We now have a format which can be directly copied and pasted to replace the MAGMOM tag within our INCAR file for more complex magnetic systems!
